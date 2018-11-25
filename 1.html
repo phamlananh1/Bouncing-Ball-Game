@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        canvas {
+            border : 1px solid #000000;
+            background-color: #fbfbff;
+        }
+    </style>
+</head>
+<body>
+<canvas id="myCanvas" width="500" height="500"></canvas>
+<script>
+    var dx = 1;
+    var dy = 1;
+    var myBar = new Bar(200, 450, 100, 10);
+    var myBall = new Ball(400, 100, 10);
+    var speed = 0.1;
+    var rightPressed = false;
+    var leftPressed = false;
+    function doKeyDown(e) {
+        if (e.keyCode === 39) {
+            rightPressed = true;
+        }
+        if (e.keyCode === 37) {
+            leftPressed = true;
+        }
+    }
+    function doKeyUp(e) {
+        if (e.keyCode === 39) {
+            rightPressed = false;
+        }
+        if (e.keyCode === 37) {
+            leftPressed = false;
+        }
+    }
+    document.addEventListener("keydown", doKeyDown, false);
+    document.addEventListener("keyup", doKeyUp, false);
+    function Bar (x1, y1, width1, height1) {
+        this.x1 = x1;
+        this.y1 = y1;
+        this.width1 = width1;
+        this.height1 = height1;
+        this.drawBar = function () {
+            var cR = document.getElementById("myCanvas");
+            var ctx1 = cR.getContext("2d");
+            ctx1.beginPath();
+            ctx1.rect(this.x1, this.y1, this.width1, this.height1);
+            ctx1.fillStyle = "#020104";
+            ctx1.fill();
+            ctx1.closePath();
+            if (rightPressed && this.x1 < 500 - this.width1) {
+                this.x1 += 3;
+            }
+            else if (leftPressed && this.x1 > 0) {
+                this.x1 -= 3;
+            }
+        }
+    }
+
+    function Ball(x, y, r) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.drawBall = function () {
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+            ctx.fillStyle = "#003300";
+            ctx.fill();
+            this.x += dx;
+            this.y += dy;
+        }
+    }
+
+    function move() {
+        myBall.drawBall();
+        myBar.drawBar();
+
+        if (myBall.x > 500 - myBall.r || myBall.x < myBall.r) {
+            dx = -dx
+        }
+        if (myBall.y + myBall.r === myBar.y1) {
+            if (myBall.x > myBar.x1 && myBall.x < myBar.x1 + myBar.width1) {
+                dy = -dy;
+            }
+        }
+        if (myBall.y + dy < myBall.r) {
+            dy = -dy;
+        }
+        else if (myBall.y > 500 - myBall.r) {
+            alert("Game Over");
+        }
+    }
+    let game = setInterval(move, speed);
+</script>
+</body>
+</html>
